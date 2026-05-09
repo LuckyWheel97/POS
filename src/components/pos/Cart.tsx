@@ -8,6 +8,7 @@ import { Plus, Minus, Trash2, ShoppingBag, Banknote, Clock, Wallet, CreditCard }
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 export const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCartStore();

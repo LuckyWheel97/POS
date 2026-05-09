@@ -7,18 +7,38 @@ import { Input } from "@/components/ui/Input";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { supabase } from "@/lib/supabase";
+
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (data.user) {
+        router.push("/pos");
+        router.refresh();
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Terjadi kesalahan saat login. Periksa email dan password Anda.");
+    } finally {
       setIsLoading(false);
-      router.push("/pos");
-    }, 1500);
+    }
   };
 
   return (
@@ -41,6 +61,11 @@ export default function LoginPage() {
             <CardTitle className="text-2xl text-center">Login</CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium ml-1">Email</label>
@@ -48,6 +73,8 @@ export default function LoginPage() {
                   type="email" 
                   placeholder="admin@printshop.com" 
                   icon={<Mail className="w-5 h-5" />}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -57,6 +84,8 @@ export default function LoginPage() {
                   type="password" 
                   placeholder="••••••••" 
                   icon={<Lock className="w-5 h-5" />}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
