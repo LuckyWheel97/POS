@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --foreground-rgb: 15, 23, 42;
   --background-start-rgb: 248, 250, 252;
@@ -22,18 +24,16 @@
   --ring: 99, 102, 241;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 248, 250, 252;
-    --background-start-rgb: 15, 23, 42;
-    --background-end-rgb: 2, 6, 23;
-    
-    --card: 30, 41, 59;
-    --card-foreground: 248, 250, 252;
-    
-    --border: 51, 65, 85;
-    --input: 51, 65, 85;
-  }
+.dark {
+  --foreground-rgb: 248, 250, 252;
+  --background-start-rgb: 15, 23, 42;
+  --background-end-rgb: 2, 6, 23;
+  
+  --card: 30, 41, 59;
+  --card-foreground: 248, 250, 252;
+  
+  --border: 51, 65, 85;
+  --input: 51, 65, 85;
 }
 
 body {

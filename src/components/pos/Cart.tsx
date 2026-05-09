@@ -4,11 +4,27 @@ import React from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
-import { Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { Plus, Minus, Trash2, ShoppingBag, Banknote, Clock, Wallet, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/Input";
+import { cn } from "@/lib/utils";
 
 export const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCartStore();
+  const [paymentStatus, setPaymentStatus] = React.useState<'Lunas' | 'DP' | 'Hutang'>('Lunas');
+  const [paymentMethod, setPaymentMethod] = React.useState<'Cash' | 'Transfer'>('Cash');
+  const [dpAmount, setDpAmount] = React.useState<number>(0);
+
+  const statusOptions = [
+    { id: 'Lunas', label: 'Lunas', icon: Banknote, color: 'text-emerald-500' },
+    { id: 'DP', label: 'DP', icon: Clock, color: 'text-amber-500' },
+    { id: 'Hutang', label: 'Hutang', icon: Wallet, color: 'text-red-500' },
+  ];
+
+  const methodOptions = [
+    { id: 'Cash', label: 'Tunai / Cash', icon: Banknote },
+    { id: 'Transfer', label: 'Transfer Bank', icon: CreditCard },
+  ];
 
   return (
     <div className="flex flex-col h-full">
@@ -77,21 +93,102 @@ export const Cart = () => {
       </div>
 
       <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-500">Subtotal</span>
-          <span className="font-medium">{formatCurrency(getTotal())}</span>
+        {/* Payment Status Toggle */}
+        <div className="space-y-3">
+          <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Status Pembayaran</label>
+          <div className="grid grid-cols-3 gap-2 p-1 bg-slate-50 dark:bg-slate-900 rounded-xl">
+            {statusOptions.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setPaymentStatus(opt.id as any)}
+                className={cn(
+                  "flex flex-col items-center gap-1 py-2 rounded-lg transition-all",
+                  paymentStatus === opt.id 
+                    ? "bg-white dark:bg-slate-800 shadow-md scale-105" 
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                )}
+              >
+                <opt.icon className={cn("w-4 h-4", paymentStatus === opt.id ? opt.color : "")} />
+                <span className="text-[10px] font-bold">{opt.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-500">Pajak (0%)</span>
-          <span className="font-medium">{formatCurrency(0)}</span>
-        </div>
-        <div className="flex justify-between items-center text-lg font-bold">
-          <span>Total</span>
-          <span className="text-indigo-600">{formatCurrency(getTotal())}</span>
+        
+        {/* Payment Method Toggle */}
+        <AnimatePresence>
+          {paymentStatus !== 'Hutang' && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden space-y-3"
+            >
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Metode Pembayaran</label>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                {methodOptions.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setPaymentMethod(opt.id as any)}
+                    className={cn(
+                      "flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all",
+                      paymentMethod === opt.id 
+                        ? "bg-white dark:bg-slate-800 shadow-md scale-105" 
+                        : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    )}
+                  >
+                    <opt.icon className={cn("w-4 h-4", paymentMethod === opt.id ? "text-indigo-600" : "")} />
+                    <span className="text-[10px] font-bold">{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* DP Amount Input */}
+        <AnimatePresence>
+          {paymentStatus === 'DP' && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="space-y-2 py-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Jumlah DP</label>
+                <Input 
+                  type="number"
+                  placeholder="Masukkan jumlah DP..."
+                  icon={<Banknote className="w-4 h-4" />}
+                  value={dpAmount || ''}
+                  onChange={(e) => setDpAmount(Number(e.target.value))}
+                  className="h-10"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="space-y-2 py-2">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-slate-500">Subtotal</span>
+            <span className="font-medium">{formatCurrency(getTotal())}</span>
+          </div>
+          <div className="flex justify-between items-center text-lg font-bold">
+            <span>Total</span>
+            <span className="text-indigo-600">{formatCurrency(getTotal())}</span>
+          </div>
+          {paymentStatus === 'DP' && (
+            <div className="flex justify-between items-center text-sm text-red-500 font-medium">
+              <span>Sisa Tagihan</span>
+              <span>{formatCurrency(getTotal() - dpAmount)}</span>
+            </div>
+          )}
         </div>
         
         <Button className="w-full h-14 text-lg" disabled={items.length === 0}>
-          Bayar Sekarang
+          {paymentStatus === 'Hutang' ? 'Simpan sebagai Hutang' : 'Bayar Sekarang'}
         </Button>
       </div>
     </div>
