@@ -1,0 +1,27 @@
+# Task List - POS ATK PrintShop
+
+- [x] **Phase 1: Project Initialization**
+    - [x] Initialize Next.js project
+    - [x] Install dependencies (Supabase, Zustand, Lucide, Framer Motion)
+    - [x] Setup directory structure
+    - [x] Configure Supabase client
+- [x] **Phase 2: Design System & Shared Components**
+    - [x] Define global styles & theme
+    - [x] Create Navbar component
+    - [x] Create UI components (Button, Input, Card)
+- [x] **Phase 3: POS Interface**
+    - [x] Setup Cart store (Zustand)
+    - [x] Implement Product grid & search
+    - [x] Implement Cart & Checkout logic (UI side)
+    - [x] Category filtering
+- [x] **Phase 4: Admin Dashboard**
+    - [x] Dashboard overview page
+    - [x] Product management (CRUD UI)
+    - [x] Sales reports visualization (MOCK)
+- [x] **Phase 5: Authentication**
+    - [x] Login page UI
+    - [x] Auth state management (MOCK)
+- [x] **Phase 6: Final Polish**
+    - [x] Responsive testing
+    - [x] Animations & transitions
+    - [x] Fixed Tailwind v4 issues
